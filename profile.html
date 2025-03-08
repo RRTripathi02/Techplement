@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+</head>
+<body>
+    <h2>User Profile</h2>
+    <div id="profile"></div>
+    <button onclick="logout()">Logout</button>
+
+    <script>
+        async function loadProfile() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                alert("Not authorized! Please log in.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            const response = await fetch('http://127.0.0.1:5000/profile', {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+
+            const data = await response.json();
+            
+            if (response.status === 200) {
+                document.getElementById("profile").innerHTML = `
+                    <p><strong>Username:</strong> ${data.username}</p>
+                    <p><strong>Email:</strong> ${data.email}</p>
+                `;
+            } else {
+                alert(data.message);
+                window.location.href = "index.html";
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            alert("Logged out successfully!");
+            window.location.href = "index.html";
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>
